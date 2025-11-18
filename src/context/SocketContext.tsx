@@ -117,6 +117,7 @@ export const useSocketManager = (namespace: string) => {
     const isConnected = useSocketStore(state => state.isConnected[namespace] || false);
 
     useEffect(() => {
+        console.log("[Zustand Socket] Connected", namespace);
         if (userId) {
             // Truyền userId vào initializeSocket
             initializeSocket(namespace, userId);

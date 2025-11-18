@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
         remotePatterns: [
             {
                 protocol: "https",
-                hostname: "**", // chấp nhận tất cả hostname
+                hostname: "**",
             },
         ],
     },

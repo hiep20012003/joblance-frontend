@@ -1,4 +1,3 @@
-// useStatus.ts
 'use client'
 
 // SỬA ĐỔI: Thay thế import useSocket bằng useSocketManager từ Zustand hook

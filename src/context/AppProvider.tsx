@@ -5,16 +5,7 @@ import ToastContainer from "@/components/shared/ToastContainer";
 import {SessionProvider} from "next-auth/react";
 import {IAuthDocument} from "@/types/auth";
 import {useStatus} from "@/lib/hooks/useStatus";
-import {logInfo} from "@/lib/utils/devLogger";
 import {useUserContext} from "@/context/UserContext";
-
-
-function StatusManager() {
-
-    logInfo('AppProvider', 'StatusManager rendering');
-
-    return null;
-}
 
 export default function AppProvider({
                                         children,
@@ -35,7 +26,6 @@ export default function AppProvider({
 
     return (
         <SessionProvider>
-            <StatusManager/>
             <ToastContainer/>
             {children}
         </SessionProvider>
