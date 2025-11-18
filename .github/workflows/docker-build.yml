@@ -32,4 +32,10 @@ jobs:
           tags: |
             nguyendunghiep20012003/joblance-frontend:${{ github.ref_name }}
             nguyendunghiep20012003/joblance-frontend:latest
+          secrets: |
+            "NEXT_PUBLIC_BASE_URL=${{ secrets.NEXT_PUBLIC_BASE_URL }}"
+            "NEXT_PUBLIC_SOCKET_URL=${{ secrets.NEXT_PUBLIC_SOCKET_URL }}"
+            "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}"
+            
+          
 
