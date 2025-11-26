@@ -35,7 +35,6 @@ export async function getOrders(searchParams: Record<string, any>) {
     });
 }
 
-
 export async function getNegotiationById(negotiationId: string) {
     return await fetchApi<Required<INegotiationDocument>>(`/negotiations/${negotiationId}`, {
         method: "GET",

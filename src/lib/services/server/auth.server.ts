@@ -16,7 +16,7 @@ export async function refreshTokenFromServer() {
         ? {Cookie: decodeURIComponent(cookieHeader)}
         : {};
 
-    return await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/refresh`, {
+    return await fetch(`${process.env.BASE_URL}/api/auth/refresh`, {
         method: "POST",
         cache: "no-store",
         credentials: "include",

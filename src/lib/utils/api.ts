@@ -1,4 +1,5 @@
 import {NextResponse} from "next/server";
+import {appConfig} from "@/lib/hooks/useConfig";
 
 /* ------------------ Interfaces ------------------ */
 export interface ApiError {
@@ -65,7 +66,7 @@ export async function fetchApi<T = Record<string, unknown>>(
 
     const baseUrl = isServer
         ? `${process.env.BASE_URL}/api` || "http://localhost:3000/api"
-        : `${process.env.NEXT_PUBLIC_BASE_URL}/api`;
+        : `${appConfig.BASE_URL}/api`;
 
     const fullUrl = `${baseUrl}${url}`;
 

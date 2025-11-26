@@ -1,5 +1,6 @@
 import {ORDER_ROUTES_REGEX, SELLER_ROUTES_REGEX} from "@/lib/constants/routes";
 import {ApiError, FetchApiError} from "@/lib/utils/api";
+import {appConfig} from '@/lib/hooks/useConfig'
 
 export function toSlug(text: string): string {
     return text
@@ -113,7 +114,7 @@ export function formatPrice(price: number) {
 
 export function isValidUrl(url: string): boolean {
     try {
-        new URL(url, process.env.NEXT_PUBLIC_BASE_URL);
+        new URL(url, appConfig.BASE_URL);
         return true;
     } catch {
         return false;

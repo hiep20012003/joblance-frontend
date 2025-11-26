@@ -4,6 +4,7 @@
 import {useEffect, useState} from "react"; // Thay đổi: dùng useState thay vì useRef
 import {io, Socket} from "socket.io-client";
 import {useUserContext} from "@/context/UserContext";
+import {appConfig} from '@/lib/hooks/useConfig'
 
 type SocketEntry = {
     socket: Socket;
@@ -43,7 +44,7 @@ export function useSocket(namespace: string = "/"): Socket | null {
 
         // --- Nếu có userId mà chưa có socket → khởi tạo
         if (!socketRegistry[namespace]) {
-            const socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}${namespace}`, {
+            const socket = io(`${appConfig.SOCKET_URL}/${namespace}`, {
                 transports: ["websocket", "polling"],
                 reconnection: true,
                 reconnectionAttempts: Infinity,
@@ -82,7 +83,7 @@ export function useSocket(namespace: string = "/"): Socket | null {
                 console.log(`[Socket] Disconnected (unused): ${namespace}`);
             }
         };
-    }, [userId, namespace]); // socketInstance đã bị loại bỏ khỏi dependencies
+    }, [userId, namespace]);
 
     return socketInstance; // Trả về giá trị state
 }

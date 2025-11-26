@@ -6,6 +6,7 @@ import {SessionProvider} from "next-auth/react";
 import {IAuthDocument} from "@/types/auth";
 import {useStatus} from "@/lib/hooks/useStatus";
 import {useUserContext} from "@/context/UserContext";
+import {useConfig} from "@/lib/hooks/useConfig";
 
 export default function AppProvider({
                                         children,
@@ -14,6 +15,7 @@ export default function AppProvider({
     children: ReactNode;
     initialUser: IAuthDocument;
 }) {
+    useConfig();
     const {setUser, user} = useUserContext();
 
     useEffect(() => {

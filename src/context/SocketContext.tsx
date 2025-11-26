@@ -3,7 +3,8 @@ import {create} from 'zustand';
 import {io, Socket} from 'socket.io-client';
 import {useEffect} from "react";
 import {logError, logInfo} from "@/lib/utils/devLogger";
-import {useUserContext} from "@/context/UserContext"; // Thêm useState để buộc re-render hook
+import {useUserContext} from "@/context/UserContext";
+import {appConfig} from '@/lib/hooks/useConfig'
 
 // Loại bỏ socketRegistry, đưa quản lý vào state của Zustand
 interface SocketState {
@@ -38,11 +39,10 @@ export const useSocketStore = create<SocketState>((set, get) => ({
         }
 
         // --- Khởi tạo Socket mới ---
-        const newSocket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}${namespace}`, {
+        const newSocket = io(`${appConfig.SOCKET_URL}/${namespace}`, {
             transports: ["websocket", "polling"],
             reconnection: true,
             reconnectionAttempts: Infinity,
-            // Thêm query để truyền userId cho server (Tùy chọn, tùy theo server setup)
             query: {userId: userId},
         });
 

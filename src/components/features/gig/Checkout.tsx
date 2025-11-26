@@ -11,6 +11,7 @@ import {Elements, PaymentElement, useElements, useStripe} from "@stripe/react-st
 import {loadStripe, Stripe, StripeError} from "@stripe/stripe-js";
 import {useToast} from "@/context/ToastContext";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
+import {appConfig} from '@/lib/hooks/useConfig'
 
 
 export default function Checkout({gig, order, clientSecret}: {
@@ -69,7 +70,7 @@ export default function Checkout({gig, order, clientSecret}: {
 
     useEffect(() => {
         const initializePayment = async () => {
-            const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+            const stripe = await loadStripe(appConfig.STRIPE_PUBLISHABLE_KEY!);
             setStripePromise(Promise.resolve(stripe));
         }
         initializePayment();
