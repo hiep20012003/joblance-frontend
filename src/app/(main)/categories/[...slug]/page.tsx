@@ -70,7 +70,7 @@ export default async function CategoriesPage({
         const subcategoryName = fromSlug(slug[1]);
         const category = GIG_CATEGORIES.find((cat) => cat.category === categoryName);
 
-        const searchGigsParams = {...(await searchParams), cat: slug[0], sub: slug[1]};
+        const searchGigsParams = {...(await searchParams), cat: slug[0], sub: slug[1], sort: 'best'};
         const filters = parseSearchParams(searchGigsParams);
         const result = await searchGigs(filters);
 

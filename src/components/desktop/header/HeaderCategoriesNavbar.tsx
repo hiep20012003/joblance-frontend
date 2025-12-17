@@ -9,7 +9,7 @@ import {toSlug} from "@/lib/utils/helper";
 export default function HeaderCategoriesNavbar() {
 
     return (
-        <div className={clsx('border-t border-gray-200 border-b')}>
+        <div className={clsx('border-t border-gray-100 border-b')}>
             <Navbar gap={4} className={'mx-auto container px-6'}>
                 {GIG_CATEGORIES.map((category) => (
                     <NavbarItem

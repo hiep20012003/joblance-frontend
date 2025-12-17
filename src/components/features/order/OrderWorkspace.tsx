@@ -218,8 +218,8 @@ export default function OrderWorkspace() {
             {order.negotiation ? (
                 <OrderNegotiationBanner
                     getNegotiationDisplayName={getNegotiationDisplayName}
-                    onApprove={() => console.log('Approve clicked')} // Placeholder
-                    onReject={() => console.log('Reject clicked')}   // Placeholder
+                    onApprove={() => console.debug('Approve clicked')} // Placeholder
+                    onReject={() => console.debug('Reject clicked')}   // Placeholder
                 />) : (
                 <OrderFinalBanner/>)
             }

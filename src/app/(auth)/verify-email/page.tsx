@@ -51,7 +51,7 @@ export default async function VerifyEmailPage({searchParams}: VerifyEmailPagePro
 
     return (
         <div className="relative flex flex-1 justify-center items-center z-10 px-6 lg:px-32">
-            <div className="bg-background backdrop-blur-sm rounded-2xl shadow-lg w-full max-w-160 text-center">
+            <div className="bg-background backdrop-blur-sm rounded-2xl shadow-lg w-160 text-center">
                 <AnimatedSwitcher activeKey={viewKey} direction="right" transitionDuration={0.36} className="w-full">
                     {/* SUCCESS */}
                     {viewKey === 'success' && (
@@ -71,7 +71,7 @@ export default async function VerifyEmailPage({searchParams}: VerifyEmailPagePro
 
                     {/* NOTICE */}
                     {viewKey === 'notice' && (
-                        <div className="flex flex-col items-center py-10">
+                        <div className="flex flex-col items-center p-10">
                             {reason === 'signup' || reason === 'login' ? (
                                 <Info className="w-14 h-14 text-blue-600 mb-4"/> // icon nhắc nhở
                             ) : (

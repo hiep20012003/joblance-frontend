@@ -11,7 +11,6 @@ import {MessageType} from "@/lib/constants/constant";
 import {v4 as uuidv4} from "uuid";
 import {useConversationContext} from "@/context/ChatContext";
 import {useUserContext} from "@/context/UserContext";
-import {logWithTrace, logInfo, logError} from "@/lib/utils/devLogger";
 import {useSocketManager} from "@/context/SocketContext";
 
 export const MESSAGES_LIMIT = 30;
@@ -22,7 +21,6 @@ interface MessageQueueItem {
 }
 
 export function useChat(conversationId?: string) {
-    logInfo("useChat", "Hook initialized", {conversationId});
 
     // SỬA ĐỔI: Sử dụng useSocketManager
     const {socket, isConnected} = useSocketManager("/chats");
@@ -55,7 +53,6 @@ export function useChat(conversationId?: string) {
     const {mutate: getMessageMutate} = useFetchMutation(getMessages, {
         disableToast: true,
         onSuccess: async (data: IMessageDocument[]) => {
-            logWithTrace("useChat", "Messages fetched successfully", {count: data?.length, conversationId});
             if (data?.length > 0) {
                 setMessages(prev => lastTimestamp ? [...prev, ...data] : data);
                 setLastTimestamp(data[data.length - 1].timestamp as string);
@@ -65,7 +62,6 @@ export function useChat(conversationId?: string) {
             }
         },
         onError: (err) => {
-            logError("useChat", "Failed to load messages", err);
             addToastByType("Failed to load messages. Try again!", "error");
         },
     });
@@ -77,10 +73,6 @@ export function useChat(conversationId?: string) {
             disableToast: true,
             onSuccess: (data: any) => {
                 const message = data.message as IMessageDocument;
-                logWithTrace("useChat", "Message created successfully", {
-                    messageId: message._id,
-                    tempId: messageQueue[0]?.tempId
-                });
 
                 const conData = data.conversation as IConversationDocument;
                 setConversations(prev => {
@@ -98,12 +90,17 @@ export function useChat(conversationId?: string) {
                         unreadCounts: conData.unreadCounts,
                     } as IConversationSummary;
 
+                    setMessages(prev =>
+                        prev.map(msg =>
+                            msg._id === message._id ? {...msg, isSending: false} : msg
+                        )
+                    );
+
                     return [updated, ...prev.filter(c => c.conversationId !== message.conversationId)];
                 });
             },
             onError: (err) => {
                 const tempId = messageQueue[0]?.tempId;
-                logError("useChat", "Message failed to send", {tempId, error: err});
                 if (tempId) {
                     setMessages(prev =>
                         prev.map(msg =>
@@ -125,10 +122,7 @@ export function useChat(conversationId?: string) {
                 conversation: IConversationDocument;
                 readByUserId: string;
             }) => {
-                logInfo("useChat", "Conversation marked as read", {
-                    conversationId: data.conversation._id,
-                    readByUserId: data.readByUserId
-                });
+
                 setConversations(prev => prev.map(con =>
                         con.conversationId === data.conversation._id
                             ? {...con, unreadCounts: data.conversation.unreadCounts}
@@ -138,7 +132,6 @@ export function useChat(conversationId?: string) {
                 needRead.current = false;
             },
             onError: (err) => {
-                logError("useChat", "Failed to mark conversation as read", err);
             },
         }
     );
@@ -158,7 +151,6 @@ export function useChat(conversationId?: string) {
             return;
         }
 
-        logInfo("useChat", "Calling readConversationMutate", {conversationId: conversationIdRef.current});
         // Dùng conversationIdRef.current thay vì conversationId (vì nó không phải dependency)
         await readConversationMutate(conversationIdRef.current);
     }, [isReading, readConversationMutate]);
@@ -169,7 +161,6 @@ export function useChat(conversationId?: string) {
             return false;
         }
 
-        logInfo("useChat", "Loading older messages", {lastTimestamp, conversationId});
         setLoadOlderMessagesLoading(true);
         try {
             await getMessageMutate({conversationId, lastTimestamp, limit: MESSAGES_LIMIT});
@@ -212,11 +203,7 @@ export function useChat(conversationId?: string) {
             isSending: true,
         } as IMessageDocument;
 
-        logWithTrace("useChat", "Optimistic message added & queued", {
-            tempId,
-            content: optimisticMessage.content,
-            type
-        });
+
         setMessages(prev => [optimisticMessage, ...prev]);
         setMessageQueue(prev => [...prev, {tempId, formData}]);
 
@@ -228,18 +215,13 @@ export function useChat(conversationId?: string) {
         if (socket && conversationId && userIdRef.current) {
             socket.emit('chat:authenticate', userIdRef.current);
             socket.emit("chat:join", conversationId);
-            logInfo("Socket", "Joined chat room", {conversationId});
         }
     }, [socket, conversationId]);
 
     // Handler: Nhận tin nhắn mới
     const handleNewMessage = useCallback(async (data: any) => {
         const message = data.message as IMessageDocument;
-        logWithTrace("Socket", "Received new message", {
-            messageId: message._id,
-            senderId: message.senderId,
-            content: message.content
-        });
+
 
         setMessages(prev => {
             const exists = prev.some(msg => msg._id === message._id);
@@ -254,7 +236,6 @@ export function useChat(conversationId?: string) {
 
         // Đánh dấu cần đọc lại nếu tin nhắn không phải của mình
         if (message.senderId !== userIdRef.current) {
-            logInfo("Socket", "Message from other user → will mark as read", {messageId: message._id});
             needRead.current = true;
         }
     }, [setMessages]); // Dùng setter để tránh dependency phức tạp
@@ -266,10 +247,7 @@ export function useChat(conversationId?: string) {
         readUpToMessageId: string;
         readAt: string;
     }) => {
-        logInfo("Socket", "Received read receipt", {
-            readByUserId: data.readByUserId,
-            upToMessageId: data.readUpToMessageId
-        });
+
 
         setMessages(prev =>
             prev.map(msg =>
@@ -305,13 +283,10 @@ export function useChat(conversationId?: string) {
         const processQueue = async () => {
             setIsProcessingQueue(true);
             const {tempId, formData} = messageQueue[0];
-            logInfo("useChat", "Processing message queue", {queueLength: messageQueue.length, currentTempId: tempId});
 
             try {
                 await createNewMessage(formData);
-                logInfo("useChat", "Message sent from queue successfully", {tempId});
             } catch (error) {
-                logError("useChat", "Error processing queue item", {tempId, error});
                 setMessages(prev =>
                     prev.map(msg =>
                         msg._id === tempId ? {...msg, isSending: false, isError: true} : msg
@@ -329,14 +304,12 @@ export function useChat(conversationId?: string) {
     // Initialize messages on conversation change (Không thay đổi)
     useEffect(() => {
         if (!conversationId) {
-            logInfo("useChat", "Conversation cleared (no conversationId)");
             setMessages([]);
             setLastTimestamp(undefined);
             setHasMoreMessages(true);
             return;
         }
 
-        logWithTrace("useChat", "Conversation changed → fetching initial messages", {conversationId});
         setMessages([]);
         setLastTimestamp(undefined);
         setHasMoreMessages(true);
@@ -370,7 +343,6 @@ export function useChat(conversationId?: string) {
         }
 
         return () => {
-            logInfo("Socket", "Leaving chat room", {conversationId});
             socket.off("message:send", handleNewMessage);
             socket.off("message:read", handleReadMessage);
 

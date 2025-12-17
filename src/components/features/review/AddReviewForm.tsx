@@ -73,7 +73,6 @@ export default function AddReviewForm({order, onClose}: AddReviewFormProps) {
         if (!validateForm()) {
             return;
         }
-        console.log(getBodyData());
         await mutate(getBodyData());
     };
 

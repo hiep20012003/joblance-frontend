@@ -1,7 +1,6 @@
 import {create} from 'zustand'
 import {devtools, subscribeWithSelector} from 'zustand/middleware'
 import {ReactNode} from 'react'
-import {isDebug, logWithTrace} from '@/lib/utils/devLogger'
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'notification'
 
@@ -50,7 +49,6 @@ export const useToastStore = create<ToastStore>()(
 
                 set((state) => {
                     const next = [...state.toasts, toast]
-                    if (isDebug) logWithTrace('Zustand', 'addToastByType', {toast, next})
                     return {toasts: next}
                 })
 
@@ -66,7 +64,6 @@ export const useToastStore = create<ToastStore>()(
                 set((state) => {
                     const prev = state.toasts
                     const next = prev.filter(t => t.id !== id)
-                    if (isDebug) logWithTrace('Zustand', 'removeToast', {id, prev, next})
                     return {toasts: next}
                 })
             },

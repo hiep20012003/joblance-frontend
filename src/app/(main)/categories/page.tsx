@@ -2,8 +2,6 @@ import Link from "next/link";
 import {Briefcase, Code, Film, LineChart, Music, Palette, PenTool, Users} from "lucide-react";
 import {GIG_CATEGORIES} from "@/lib/constants/constant";
 import {toSlug} from "@/lib/utils/helper";
-import Carousel from "@/components/shared/Carousel";
-import Image from 'next/image'
 
 const categoryIcons: Record<string, React.ElementType> = {
     "Graphics & Design": Palette,

@@ -1,7 +1,5 @@
 import {create} from 'zustand';
 import {devtools, subscribeWithSelector} from 'zustand/middleware';
-import {isDebug, logWithTrace} from '@/lib/utils/devLogger';
-
 // ------------------------------------
 // 1. Status store (online/offline)
 // ------------------------------------
@@ -24,7 +22,6 @@ export const useStatusStore = create<StatusStore>()(
                     const next = new Map(prev);
                     next.set(userId, true);
 
-                    if (isDebug) logWithTrace('Zustand', 'setOnline', {userId, prev, next});
                     return {online: next};
                 }),
 
@@ -34,13 +31,11 @@ export const useStatusStore = create<StatusStore>()(
                     const next = new Map(prev);
                     next.set(userId, false);
 
-                    if (isDebug) logWithTrace('Zustand', 'setOffline', {userId, prev, next});
                     return {online: next};
                 }),
 
             clearAll: () =>
                 set((state) => {
-                    if (isDebug) logWithTrace('Zustand', 'clearAll online', {prev: state.online});
                     return {online: new Map()};
                 }),
 
@@ -54,7 +49,6 @@ export const useStatusStore = create<StatusStore>()(
                         next.set(update.userId, isOnline);
                     });
 
-                    if (isDebug) logWithTrace('Zustand', 'setBatchStatus', {count: updates.length, prev, next});
                     return {online: next};
                 }),
         })),
@@ -88,7 +82,6 @@ export const useLastActiveStore = create<LastActiveStore>()(
                     const next = new Map(prev);
                     next.set(userId, timestamp);
 
-                    if (isDebug) logWithTrace('Zustand', 'setLastActive', {userId, timestamp, prev, next});
                     return {lastActive: next};
                 }),
 
@@ -101,13 +94,11 @@ export const useLastActiveStore = create<LastActiveStore>()(
                         next.set(update.userId, update.timestamp);
                     });
 
-                    if (isDebug) logWithTrace('Zustand', 'setBatchLastActive', {count: updates.length, prev, next});
                     return {lastActive: next};
                 }),
 
             clearAll: () =>
                 set((state) => {
-                    if (isDebug) logWithTrace('Zustand', 'clearAll lastActive', {prev: state.lastActive});
                     return {lastActive: new Map()};
                 }),
         })),
@@ -131,9 +122,7 @@ interface StatusActionsStore {
     setRequestStatus: (func: (id?: string) => void) => void;
 }
 
-// Giá trị mặc định: hàm rỗng cho requestStatus
 const defaultAction = (id?: string) => {
-    if (isDebug) console.warn('Presence actions not yet initialized by the StatusActionInitializer.');
 };
 
 export const useStatusActionsStore = create<StatusActionsStore>()(

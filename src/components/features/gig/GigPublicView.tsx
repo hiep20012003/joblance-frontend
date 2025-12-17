@@ -2,9 +2,9 @@
 
 import React, {useEffect, useMemo, useRef, useState} from "react";
 import {ISellerDocument} from "@/types/seller";
-import {MapPin, Send, MoveRight, Clock3, Star} from "lucide-react";
+import {Send, MoveRight, Clock3, Star} from "lucide-react";
 import Avatar from "@/components/shared/Avatar";
-import {notFound, useRouter} from 'next/navigation';
+import {notFound} from 'next/navigation';
 import GigCard from "@/components/features/gig/GigCard";
 import {IGigDocument} from "@/types/gig";
 import Link from "next/link";
@@ -17,9 +17,9 @@ import {MultiCardCarousel} from "@/components/shared/MultiCardCarousel";
 import {AnimatePresence, motion} from "framer-motion";
 import OrderCustomize from "@/components/features/order/OrderCustomize";
 import Modal from "@/components/shared/Modal";
-import {MultiFileInput} from "@/components/shared/MultiFileInput";
 import ContactForm from "@/components/features/chat/ContactForm";
 import {ReviewList} from "@/components/features/review/ReviewList";
+import Markdown from 'react-markdown';
 
 export default function GigPublicView({
                                           gig,
@@ -35,7 +35,6 @@ export default function GigPublicView({
     const floatingHeaderRef = useRef<HTMLDivElement>(null);
     const [showContactForm, setShowContactForm] = useState<boolean>(false);
     const [isContinueOpen, setContinueOpen] = useState<boolean>(false);
-    const router = useRouter();
 
     const avgRating = useMemo(() => {
         if (!gig) return 0;
@@ -175,18 +174,22 @@ export default function GigPublicView({
                     </div>
 
                     {/* === RIGHT COLUMN: Continue + Contact === */}
-                    <aside className="lg:sticky top-8 grid grid-cols-1 h-fit gap-8 order-2 lg:order-1">
+                    <aside className="lg:sticky top-8 grid grid-cols-1 h-fit gap-6 order-2 lg:order-1">
                         {/* Continue Card */}
                         <div
-                            className="bg-white rounded-md shadow p-6 border border-gray-100 lg:max-w-140 lg:ml-auto">
+                            className="w-full bg-white rounded-md shadow-xs p-6 border border-gray-100 lg:max-w-120 lg:ml-auto">
                             <div className="flex flex-col gap-4">
                                 <div className="flex justify-between gap-8">
-                                    <h2 className="text-lg font-semibold">{gig.basicTitle}</h2>
+                                    <div className="text-lg font-semibold">
+                                        <Markdown>
+                                            {gig.basicTitle}
+                                        </Markdown>
+                                    </div>
                                     <p className="text-xl font-bold">{formatPrice(gig.price)}</p>
                                 </div>
                                 <div className="border-b border-gray-200"></div>
                                 <div className="text-base text-gray-700">
-                                    <h2>{gig.basicDescription}</h2>
+                                    <Markdown>{gig.basicDescription}</Markdown>
                                 </div>
                                 <div className="flex items-center gap-1 text-base font-semibold text-gray-900">
                                     <Clock3 className="h-4 w-4" strokeWidth={3}/>
@@ -204,7 +207,7 @@ export default function GigPublicView({
 
                         {/* Contact Card */}
                         <div
-                            className="flex flex-col gap-1 p-6 border border-gray-100 rounded-md shadow w-full lg:max-w-140 lg: lg:ml-auto">
+                            className="w-full flex flex-col gap-1 p-6 border border-gray-100 rounded-md shadow-xs lg:max-w-120 lg: lg:ml-auto">
                             <div className="flex gap-3 mb-3">
                                 <Avatar
                                     src={seller.profilePicture || "/images/default-avatar.png"}
@@ -229,13 +232,15 @@ export default function GigPublicView({
                     </aside>
 
                     {/* === LEFT BOTTOM COLUMN: About + Additional Sections === */}
-                    <div className="grid grid-cols-1 gap-8 order-3 lg:order-2">
+                    <div className="grid grid-cols-1 gap-16 order-3 lg:order-2 mt-8">
                         {/* About */}
                         <section id="about" className="scroll-mt-32">
-                            <h2 className="text-xl font-bold mb-3 text-gray-900">About this gig</h2>
-                            <p className="text-gray-800 leading-relaxed whitespace-pre-line">
-                                {gig.description || "No description provided."}
-                            </p>
+                            <h2 className="text-xl font-bold mb-4 text-gray-900">About this gig</h2>
+                            <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                                <Markdown>
+                                    {gig.description || "No description provided."}
+                                </Markdown>
+                            </div>
                         </section>
 
                         <section id="reviews" className="scroll-mt-32">

@@ -11,16 +11,11 @@ import {IConversationDocument, IConversationSummary, IMessageDocument} from "@/t
 import {usePathname} from "next/navigation";
 import {getFlattenedConversations} from "@/lib/services/server/chat.server";
 
-// Thêm import logger
-import {logInfo, logError, logWithTrace} from "@/lib/utils/devLogger";
 import {useSocketManager} from "@/context/SocketContext";
 import {useStatusContext} from "@/context/StatusContext";
 
 export function useNotification(userId: string) {
-    // 1. Hook Initialization
-    logInfo('Notification', 'Initializing useNotification', {userId});
 
-    // Sử dụng useSocketManager
     const {socket, isConnected} = useSocketManager("/notifications");
 
     const {addToastByType} = useToast();
@@ -30,7 +25,6 @@ export function useNotification(userId: string) {
 
     const [notifications, setNotifications] = useState<INotificationDocument[]>([]);
 
-    // Refs để tránh stale closure
     const userIdRef = useRef(userId);
     const pathnameRef = useRef(pathname);
 
@@ -46,11 +40,9 @@ export function useNotification(userId: string) {
         {
             disableToast: true,
             onSuccess: (data: INotificationDocument[]) => {
-                logInfo('Notification', 'Notifications fetched successfully', {count: data.length});
                 setNotifications(data);
             },
             onError: () => {
-                logError('Notification', 'Failed to fetch notifications');
             },
         }
     );
@@ -61,13 +53,11 @@ export function useNotification(userId: string) {
         {
             disableToast: true,
             onSuccess: (data: INotificationDocument) => {
-                logInfo('Notification', 'Notification marked as read', {notificationId: data._id});
                 setNotifications(prev =>
                     prev.map(n => n._id === data._id ? data : n)
                 );
             },
             onError: () => {
-                logError('Notification', 'Failed to mark notification as read');
             },
         }
     );
@@ -75,7 +65,6 @@ export function useNotification(userId: string) {
     // Memoized mark as read function (Không thay đổi)
     const markAsRead = useCallback(
         (notificationId: string) => {
-            logWithTrace('Notification', 'Marking notification as read', {notificationId});
             markAsReadMutate(notificationId);
         },
         [markAsReadMutate]
@@ -85,7 +74,6 @@ export function useNotification(userId: string) {
     useEffect(() => {
         if (!userId) return;
 
-        logWithTrace('Notification', 'Fetching notifications', {userId});
         getNotificationsMutate({userId});
     }, [userId]);
 
@@ -97,14 +85,12 @@ export function useNotification(userId: string) {
     const joinRoom = useCallback(() => {
         if (socket && userId) {
             socket.emit("notifications:join", userId);
-            logInfo('Notification', `Joined notifications room for user ${userId}`);
         }
     }, [socket, userId]);
 
 
     // Handler: Common notification
     const handleCommonNotification = useCallback((n: INotificationDocument) => {
-        logInfo('Notification', 'New common notification received', {notificationId: n._id, type: n.type});
 
         setNotifications(prev => [n, ...prev]);
 
@@ -124,12 +110,6 @@ export function useNotification(userId: string) {
         isNewConversation?: boolean;
         type: string;
     }) => {
-        logInfo('Notification', 'Chat alert notification received', {
-            message: data.message.content,
-            conversationId: data.conversation._id,
-            type: data.type,
-            pathname: pathnameRef.current // Dùng Ref
-        });
 
         // Only show toast if not on /inbox page
         if (data.type === 'alert' && !pathnameRef.current.includes('/inbox')) {
@@ -149,23 +129,15 @@ export function useNotification(userId: string) {
         type: string;
     }) => {
         const {message, isNewConversation, conversation} = data;
-        console.log('test', data)
-
-        logInfo('Notification', 'Updating conversation list from chat notification', {
-            messageId: message._id,
-            isNewConversation,
-            conversationId: conversation._id
-        });
 
         if (isNewConversation) {
             // Fetch entire conversation list for new conversations
             try {
                 // Dùng Ref cho userId
-                requestStatus(message.senderId)
                 const newConversations = await getFlattenedConversations(userIdRef.current);
                 setConversations(newConversations);
+                requestStatus(message.senderId)
             } catch (error) {
-                logError('Notification', 'Failed to fetch conversations for new chat notification', {error});
             }
         } else {
             // SỬA DỤNG HÀM SETTER FORM CỦA setConversations
@@ -197,10 +169,6 @@ export function useNotification(userId: string) {
         conversation: IConversationDocument;
         readByUserId: string;
     }) => {
-        logInfo('Notification', 'Conversation read event received', {
-            conversationId: data.conversation._id,
-            readByUserId: data.readByUserId
-        });
 
         const {conversation, readByUserId} = data;
 
@@ -224,8 +192,6 @@ export function useNotification(userId: string) {
     // =======================================================
 
     useEffect(() => {
-        logInfo('Notification', `Socket Status check (Zustand): socket=${!!socket}, userId=${!!userId}, isConnected=${isConnected}`);
-
         // Điều kiện chạy logic nghiệp vụ: Phải có socket, userId
         if (!socket || !userId) return;
 
@@ -239,9 +205,7 @@ export function useNotification(userId: string) {
         if (isConnected) {
             // Chạy logic tham gia phòng khi isConnected là true
             joinRoom();
-            logInfo('Notification', 'Socket is connected, joining room directly.');
         } else {
-            logInfo('Notification', 'Socket not connected yet, listeners registered, waiting for connection.');
         }
 
         // Cleanup: Xóa tất cả listeners khi component unmount hoặc dependencies thay đổi
@@ -251,7 +215,6 @@ export function useNotification(userId: string) {
             socket.off("chat:list_update", handleUpdateListChatNotification);
             socket.off("conversation:read", handleReadConversationNotification);
             socket.emit("notifications:leave", userId);
-            logInfo('Notification', 'Cleanup complete, left room.');
         };
 
         // Dependencies: Tất cả các hàm handler (đã bọc useCallback) và socket/state

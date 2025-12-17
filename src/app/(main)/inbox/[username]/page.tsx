@@ -10,6 +10,6 @@ export default function ChatWindowPage() {
         );
     } catch (error) {
         if (isRedirectError(error)) throw error;
-        <ServerComponentError error={error}/>
+        return <ServerComponentError error={error}/>
     }
 }

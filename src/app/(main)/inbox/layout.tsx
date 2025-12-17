@@ -44,7 +44,7 @@ export default async function InboxLayout({children}: { children: ReactNode }) {
             <div
                 className="flex-1 h-full flex px-12 py-6 rounded-lg overflow-hidden">
                 <MessageSidebar classname="pr-8 flex-1/3 max-w-[400px]" initConversations={flatConversations}/>
-                <div className="flex-1 h-full rounded-3xl border border-gray-200 overflow-hidden shadow-sm">
+                <div className="flex-1 h-full rounded-3xl border border-gray-200 overflow-hidden shadow-sm min-w-[600px]">
                     {children}
                 </div>
             </div>

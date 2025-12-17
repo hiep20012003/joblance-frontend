@@ -29,8 +29,6 @@ export default function LogoutPage() {
         handleLogout().then();
     }, []);
 
-    console.log('logout');
-
     return (
         <div className="flex justify-center items-center min-h-screen">
             <div className="flex items-center gap-3 text-gray-600 text-lg">

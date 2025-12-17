@@ -19,6 +19,7 @@ import {IGigDocument} from "@/types/gig";
 import {ISellerDocument} from "@/types/seller";
 import {SellerItem} from "@/components/features/seller/SellerItem";
 import {useRouter} from "next/navigation";
+import {useEffect, useLayoutEffect, useRef, useState} from "react";
 
 export default function HomePage({topGigs, recommendedGigs, recommendedCategory, topSellers}: {
     topGigs: IGigDocument[],
@@ -28,6 +29,9 @@ export default function HomePage({topGigs, recommendedGigs, recommendedCategory,
 }) {
     const {user} = useUserContext();
     const router = useRouter();
+
+    const [visibleCount, setVisibleCount] = useState<number>(4);
+    const homeRef = useRef<HTMLDivElement>(null);
 
     const latestCategorySelected = recommendedCategory
 
@@ -42,8 +46,42 @@ export default function HomePage({topGigs, recommendedGigs, recommendedCategory,
         {name: "Consulting", icon: Users, color: "bg-cyan-100 text-cyan-600"},
     ];
 
+    const breakpoints = { sm: 640, md: 768, lg: 1024 };
+
+    useEffect(() => {
+        if(!homeRef.current) return;
+
+        const observer = new ResizeObserver(([entry]) => {
+            const w = entry.contentRect.width;
+            const newBp =
+                w < breakpoints.sm ? "xs" :
+                    w < breakpoints.md ? "sm" :
+                        w < breakpoints.lg ? "md" : "lg";
+
+            switch (newBp) {
+                case "xs":
+                case "sm":
+                    setVisibleCount(1);
+                    break;
+
+                case "md":
+                    setVisibleCount(2);
+                    break;
+
+                case "lg": setVisibleCount(4);
+                    break;
+
+                default:
+                    setVisibleCount(1);
+            }
+
+        });
+        observer.observe(homeRef.current);
+        return () => observer.disconnect();
+    }, []);
+
     return (
-        <div className="home-page bg-gray-50 min-h-screen">
+        <div ref={homeRef} className="home-page bg-gray-50 min-h-screen">
             {/* Hero Section */}
             <section className="bg-gradient-to-r from-primary-600 to-primary-700 text-white py-16">
                 <div className="container mx-auto px-6">
@@ -65,7 +103,7 @@ export default function HomePage({topGigs, recommendedGigs, recommendedCategory,
                         {categories.map((category, index) => (
                             <Link
                                 key={index}
-                                href={`/src/app/gigs/categories/${toSlug(category.name)}`}
+                                href={`/categories/${toSlug(category.name)}`}
                                 className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:shadow-md transition-all hover:-translate-y-1 text-center"
                             >
                                 <div
@@ -89,6 +127,8 @@ export default function HomePage({topGigs, recommendedGigs, recommendedCategory,
                             </h2>
                         </div>
                         <MultiCardCarousel
+                            visibleCount={visibleCount}
+
                             items={recommendedGigs}
                             renderItem={(item) =>
                                 <GigCard {...(item)} />
@@ -106,6 +146,8 @@ export default function HomePage({topGigs, recommendedGigs, recommendedCategory,
                             <h2 className="text-2xl font-bold text-gray-900">Top 10 Gigs for You</h2>
                         </div>
                         <MultiCardCarousel
+                            visibleCount={visibleCount}
+
                             items={topGigs}
                             renderItem={(item) =>
                                 <GigCard {...(item)} />
@@ -121,7 +163,7 @@ export default function HomePage({topGigs, recommendedGigs, recommendedCategory,
                         <h2 className="text-2xl font-bold text-gray-900 mb-6">Top Rated Sellers</h2>
                         <MultiCardCarousel
                             items={topSellers}
-                            // visibleCount={5}
+                            visibleCount={visibleCount}
                             renderItem={(item) =>
                                 <SellerItem item={item}/>
                             }

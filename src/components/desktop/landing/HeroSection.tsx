@@ -3,6 +3,7 @@
 import {ChangeEvent, useRef, useState} from "react";
 import {CircleX, Play, Search, Pause} from 'lucide-react';
 import Link from "next/link";
+import {useRouter} from "next/navigation";
 
 const topSearch = ['website development', 'logo design', 'video editing', 'programing', 'vibe code'];
 
@@ -10,6 +11,7 @@ export const HeroSection = () => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isPlaying, setIsPlaying] = useState<boolean>(true);
     const [searchInput, setSearchInput] = useState('');
+    const router = useRouter();
 
     const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSearchInput(event.target.value);
@@ -18,6 +20,7 @@ export const HeroSection = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!searchInput.trim()) return;
+        router.push(`/search/gigs?query=${searchInput.trim()}`)
     };
 
     const clearInput = () => {
@@ -105,7 +108,7 @@ export const HeroSection = () => {
                     <ol className="flex flex-row gap-3 sm:gap-4 overflow-x-auto scrollbar-hide">
                         {topSearch.map((item, i) => (
                             <li key={i} className="flex-shrink-0">
-                                <Link href={''} className="text-white text-sm sm:text-base py-1 px-2 btn btn-outlined">
+                                <Link href={`/search/gigs?query=${item.trim()}`} className="text-white text-sm sm:text-base py-1 px-2 btn btn-outlined">
                                     {item}
                                 </Link>
                             </li>

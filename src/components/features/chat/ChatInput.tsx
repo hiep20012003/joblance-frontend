@@ -2,12 +2,12 @@
 'use client';
 
 import {forwardRef, useImperativeHandle, useRef, useState, useEffect, useCallback} from 'react';
-import {SendHorizontal, Paperclip, X, File as FileIcon} from 'lucide-react'; // Added FileIcon
+import {SendHorizontal, Paperclip, X, File as FileIcon} from 'lucide-react';
 import clsx from 'clsx';
 import {useFileInputLogic} from '@/lib/hooks/useFileInputLogic';
-import Image from 'next/image'; // Added Image import
+import Image from 'next/image';
 import {BASE_MIMES, CHAT_FILE_ALLOWED_MIMES} from "@/lib/constants/constant";
-import {formatFileSize} from "@/lib/utils/helper"; // Import the hook and utility
+import {formatFileSize} from "@/lib/utils/helper";
 
 export interface ChatInputRef {
     reset: () => void;
@@ -58,7 +58,7 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
 
         const updatePreviews = useCallback((f: File, currentPreviews: string[], setPreviewsState: React.Dispatch<React.SetStateAction<string[]>>): string[] => {
             if (currentPreviews.length > 0) {
-                URL.revokeObjectURL(currentPreviews[0]); // Revoke previous URL for single file
+                URL.revokeObjectURL(currentPreviews[0]);
             }
 
             if (f.type.startsWith('image/') || f.type.startsWith('video/')) {
@@ -74,7 +74,7 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
         const {
             inputRef,
             handleDrag,
-            handleDrop: handleFileInputDrop, // Rename to avoid conflict
+            handleDrop: handleFileInputDrop,
         } = useFileInputLogic(
             {
                 maxSizeMB: MAX_FILE_SIZE_MB,
@@ -117,15 +117,14 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
                 if (!error) {
                     setFile(selectedFile);
                     setMode('file');
-                    // Directly call updatePreviews to set local previews state
                     updatePreviews(selectedFile, previews, setPreviews);
                 } else {
                     alert(error);
                     if (inputRef.current) {
-                        inputRef.current.value = ''; // Clear the input if there's an error
+                        inputRef.current.value = '';
                     }
-                    setFile(null); // Clear selected file on error
-                    setPreviews([]); // Clear previews on error
+                    setFile(null);
+                    setPreviews([]);
                 }
             }
         };
@@ -134,9 +133,9 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
             setFile(null);
             setMode('text');
             if (inputRef.current) {
-                inputRef.current.value = ''; // Clear the file input
+                inputRef.current.value = '';
             }
-            setPreviews([]); // Clear any generated previews
+            setPreviews([]);
             setTimeout(() => textareaRef.current?.focus(), 0);
         };
 
@@ -158,10 +157,10 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
         };
 
         return (
-            <div
-                className="flex items-stretch gap-2 p-4 bg-white shadow-[0_-2px_4px_0px_rgba(0,0,0,0.03)]"> {/* Main container for 3 sections */}
+            <div className="flex items-stretch gap-2 p-4 bg-white shadow-[0_-2px_4px_0px_rgba(0,0,0,0.03)]">
                 {/* Hidden file input */}
                 <input
+                    placeholder={"file"}
                     type="file"
                     ref={inputRef}
                     onChange={(e) => handleFileSelected(e.target.files)}
@@ -184,7 +183,7 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
                 {/* Middle Section: Chat Input / File Preview */}
                 <div
                     className={clsx(
-                        'relative flex-grow rounded-2xl',
+                        'relative flex flex-grow min-w-0 rounded-2xl',
                         mode === 'text'
                             ? 'bg-gray-100'
                             : 'bg-blue-50',
@@ -200,7 +199,7 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
                 >
                     {/* CHẾ ĐỘ TEXT */}
                     {mode === 'text' && (
-                        <div className="flex items-center gap-3 p-3 pr-1">
+                        <div className="flex items-center gap-3 p-3 pr-1 w-full">
                           <textarea
                               name={'message'}
                               ref={textareaRef}
@@ -218,39 +217,47 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
 
                     {/* CHẾ ĐỘ FILE */}
                     {mode === 'file' && file && (
-                        <div className="p-4">
-                            <div className="flex items-start gap-3">
+                        <div className="w-full p-3 sm:p-4">
+                            <div className="flex items-start gap-2 sm:gap-3 min-w-0">
+                                {/* Thumbnail */}
                                 {previews[0] ? (
-                                    file.type.startsWith('video/') ? (
-                                        <div
-                                            className="w-24 h-24 flex-shrink-0 rounded border border-gray-200 overflow-hidden bg-gray-50">
-                                            <video src={previews[0]} className="w-full h-full object-contain"/>
+                                    file.type.startsWith("video/") ? (
+                                        <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 flex-shrink-0 rounded border border-gray-200 overflow-hidden bg-gray-50">
+                                            <video src={previews[0]} className="w-full h-full object-contain" />
                                         </div>
                                     ) : (
-                                        <div
-                                            className="w-24 h-24 flex-shrink-0 rounded border border-gray-200 overflow-hidden bg-gray-50">
+                                        <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 flex-shrink-0 rounded border border-gray-200 overflow-hidden bg-gray-50">
                                             <Image
-                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                                src={previews[0]} alt="Preview" width={96} height={96}
-                                                className="w-full h-full object-contain"/>
+                                                src={previews[0]}
+                                                alt="Preview"
+                                                width={96}
+                                                height={96}
+                                                className="w-full h-full object-contain"
+                                            />
                                         </div>
                                     )
                                 ) : (
-                                    <div
-                                        className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded border border-gray-200">
-                                        <FileIcon className="w-8 h-8 text-gray-400"/>
+                                    <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 flex-shrink-0 flex items-center justify-center bg-gray-100 rounded border border-gray-200">
+                                        <FileIcon className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" />
                                     </div>
                                 )}
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
-                                    <p className="text-xs text-gray-500 mt-1">{formatFileSize(file.size)}</p>
+
+                                {/* File info */}
+                                <div className="flex-1 min-w-0 overflow-hidden">
+                                    <p className="text-xs sm:text-sm font-medium text-gray-900 truncate">
+                                        {file.name}
+                                    </p>
+                                    <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1">
+                                        {formatFileSize(file.size)}
+                                    </p>
                                 </div>
 
+                                {/* Remove button */}
                                 <button
                                     onClick={handleClearFile}
-                                    className="p-2 hover:bg-red-100 rounded-full transition text-red-600 flex-shrink-0"
+                                    className="p-1.5 sm:p-2 hover:bg-red-100 rounded-full transition text-red-600 flex-shrink-0"
                                 >
-                                    <X size={20}/>
+                                    <X size={18} className="sm:w-5 sm:h-5" />
                                 </button>
                             </div>
                         </div>
@@ -261,9 +268,9 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
                 <div className={'flex items-end justify-center gap-2 mb-1.5'}>
                     <button
                         onClick={handleSend}
-                        disabled={(!text.trim() && !file) || disabled} // Disable if no text and no file
+                        disabled={(!text.trim() && !file) || disabled}
                         className={clsx(
-                            'btn btn-soft p-2 rounded-full transition flex-shrink-0', // Reverted p-3 to p-2.5
+                            'btn btn-soft p-2 rounded-full transition flex-shrink-0',
                             (text.trim() || file)
                                 ? 'bg-blue-600 hover:bg-blue-700 text-white'
                                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'

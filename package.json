@@ -1,6 +1,6 @@
 {
   "name": "joblance-frontend",
-  "version": "0.1.0",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -33,6 +33,7 @@
     "react-device-detect": "^2.2.3",
     "react-dom": "19.1.0",
     "react-infinite-scroll-component": "^6.1.0",
+    "react-markdown": "^10.1.0",
     "react-redux": "^9.2.0",
     "react-tooltip": "^5.30.0",
     "redux-persist": "^6.0.0",

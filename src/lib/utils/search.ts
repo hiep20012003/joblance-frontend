@@ -33,7 +33,7 @@ export function mapSortKey(key?: string): string {
         case 'newest':
             return 'createdAt';
         default:
-            return 'bestSelling';
+            return '_score';
     }
 }
 

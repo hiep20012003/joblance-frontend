@@ -149,10 +149,6 @@ export default function MessageSidebar({
         // Lấy timestamp/ID của hội thoại cuối cùng để phân trang
         const lastConversationTimestamp = conversations[conversations.length - 1]?.lastMessage?.timestamp;
 
-        console.log({
-            limit: CONVERSATION_LIMIT,
-            lastTimestamp: lastConversationTimestamp
-        })
         // --- MOCK API CALL START ---
         // Thay thế bằng hàm service/API thực tế: getMoreConversations(lastTimestamp, CONVERSATION_LIMIT)
         const newConversation = await getFlattenedConversations(user?.id, {

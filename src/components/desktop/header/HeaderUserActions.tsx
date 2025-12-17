@@ -80,6 +80,15 @@ export default function HeaderUserActions() {
 
     const toggleMenu = (menu: string) => {
         setOpenMenu(openMenu === menu ? null : menu);
+        getFlattenedConversations(user?.id ?? '').then(data => {
+            setConversations(data);
+            setUnreadCount(data);
+        }).catch(async error => {
+            const {status, data} = parseFetchError(error);
+            if (status === 401) {
+                await logout({redirectUrl: `/logout?redirect=${pathname}`})
+            }
+        });
     };
 
     if (!user) {

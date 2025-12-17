@@ -21,7 +21,6 @@ export function useSocket(namespace: string = "/"): Socket | null {
     const {user} = useUserContext();
     const userId = user?.id;
 
-    // THAY ĐỔI: Sử dụng useState để giữ instance socket và kích hoạt re-render
     const [socketInstance, setSocketInstance] = useState<Socket | null>(null);
 
     useEffect(() => {
@@ -32,8 +31,7 @@ export function useSocket(namespace: string = "/"): Socket | null {
             if (entry?.socket.connected) {
                 entry.socket.disconnect();
                 delete socketRegistry[namespace];
-                setSocketInstance(null); // Đảm bảo state được clear
-                console.log(`[Socket] Auto disconnected (logout): ${namespace}`);
+                setSocketInstance(null);
             }
             // Đảm bảo instance là null nếu userId không tồn tại
             if (socketInstance !== null) {
@@ -52,22 +50,20 @@ export function useSocket(namespace: string = "/"): Socket | null {
                 reconnectionDelayMax: 10000,
             });
 
-            socket.on("connect", () => {
-                console.log(`[Socket] Connected: ${namespace}`)
-            });
-            socket.on("disconnect", (reason) =>
-                console.log(`[Socket] Disconnected (${namespace}):`, reason)
-            );
-            socket.on("reconnect_attempt", (attempt) =>
-                console.log(`[Socket] Reconnecting (${namespace}) - Attempt ${attempt}`)
-            );
+            // socket.on("connect", () => {
+            //     console.log(`[Socket] Connected: ${namespace}`)
+            // });
+            // socket.on("disconnect", (reason) =>
+            //     console.log(`[Socket] Disconnected (${namespace}):`, reason)
+            // );
+            // socket.on("reconnect_attempt", (attempt) =>
+            //     console.log(`[Socket] Reconnecting (${namespace}) - Attempt ${attempt}`)
+            // );
 
             socketRegistry[namespace] = {socket, count: 0};
         }
 
-        // Cập nhật count và CẬP NHẬT STATE
         socketRegistry[namespace].count++;
-        // Kích hoạt re-render ở đây, đảm bảo useStatus nhận được socket non-null
         setSocketInstance(socketRegistry[namespace].socket);
 
         return () => {
@@ -78,12 +74,9 @@ export function useSocket(namespace: string = "/"): Socket | null {
             if (entry.count <= 0) {
                 entry.socket.disconnect();
                 delete socketRegistry[namespace];
-                // KHÔNG cần setSocketInstance(null) ở đây nếu component unmount,
-                // vì component khác vẫn có thể dùng socketRegistry.
-                console.log(`[Socket] Disconnected (unused): ${namespace}`);
             }
         };
     }, [userId, namespace]);
 
-    return socketInstance; // Trả về giá trị state
+    return socketInstance;
 }

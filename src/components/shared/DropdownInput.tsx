@@ -53,6 +53,7 @@ export default function DropdownInput({
     return (
         <div className="relative w-full">
             <Input
+                autoComplete={"off"}
                 leftIcon={icon}
                 rightIcon={<ChevronDown className="w-4 h-4"/>}
                 type="text"

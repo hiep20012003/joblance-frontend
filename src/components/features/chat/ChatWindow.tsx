@@ -396,8 +396,8 @@ export default function ChatWindow({className}: { className?: string }) {
                 </LoadingWrapper>
 
                 {/* Input */}
-                <div className=" bg-white relative z-10 border-t border-gray-200">
-                    <button
+                <div className="w-full bg-white relative z-10 border-t border-gray-200">
+                    <div
                         onClick={scrollToBottom}
                         className={clsx(
                             'absolute -top-16 right-1/2 translate-x-1/2 btn p-2.5 rounded-full bg-white justify-center items-center w-fit h-fit shadow-xl border border-gray-200 transition-all duration-300 ease-in-out',
@@ -413,7 +413,7 @@ export default function ChatWindow({className}: { className?: string }) {
                             </div>
                         ) : (
                             <MoveDown size={16} className="text-primary-600" strokeWidth={3}/>)}
-                    </button>
+                    </div>
                     <ChatInput onSend={handleSendMessage}/>
                 </div>
             </div>

@@ -1,5 +1,4 @@
 import {useMemo} from "react";
-import {logInfo} from "@/lib/utils/devLogger"; // Thêm import logger
 
 export const Pagination = {
     DOTS: '...'
@@ -30,14 +29,6 @@ export const usePagination = ({
         // Trường hợp ít trang
         if (totalPageCount <= 1) {
             const pages = [1];
-            logInfo('Pagination', 'Calculating pagination', {
-                totalCount,
-                currentPage,
-                pageSize,
-                siblingCount,
-                totalPageCount,
-                pages
-            });
             return pages;
         }
 
@@ -71,16 +62,6 @@ export const usePagination = ({
             }
             pages.push(totalPageCount);
         }
-
-        // Log duy nhất: input + output
-        logInfo('Pagination', 'Calculating pagination', {
-            totalCount,
-            currentPage,
-            pageSize,
-            siblingCount,
-            totalPageCount,
-            pages
-        });
 
         return pages;
     }, [totalCount, currentPage, pageSize, siblingCount]);

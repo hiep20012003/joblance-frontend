@@ -18,7 +18,8 @@ export default function HeaderSearchInput() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!searchInput.trim()) return;
-        router.push(`/search/gigs?query=${searchInput}&_t=${Date.now()}`);
+        router.push(`/search/gigs?query=${searchInput.trim()}&_t=${Date.now()}`);
+        clearInput();
     };
 
     const clearInput = () => {

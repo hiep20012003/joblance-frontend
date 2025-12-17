@@ -16,6 +16,5 @@ export function useConfig() {
         }
 
         fetchConfig();
-        console.log(appConfig);
     }, [])
 }

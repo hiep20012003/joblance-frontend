@@ -22,8 +22,8 @@ export const SellerItem: React.FC<SellerItemProps> = ({item}) => {
                     size={58}
                 />
 
-                <div className="h-full flex flex-col justify-between items-start gap-2">
-                    <h3 className="font-semibold text-gray-900">{item.fullName}</h3>
+                <div className="h-full flex flex-col justify-between items-start gap-2 overflow-hidden">
+                    <h3 className="font-semibold text-gray-900 truncate">{item.fullName}</h3>
 
                     <div className="flex items-center justify-center gap-1">
                         {Array.from({length: 5}).map((_, i) => (

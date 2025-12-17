@@ -77,7 +77,7 @@ export default function Checkout({gig, order, clientSecret}: {
     }, []);
 
     function handleLoadPaymentError(event: { elementType: "payment"; error: StripeError }) {
-        if (event.error) console.log(event.error);
+        // if (event.error) console.log(event.error);
     }
 
     if (!stripePromise || !clientSecret) {

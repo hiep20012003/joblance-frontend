@@ -12,7 +12,10 @@ import {createConversationSchema} from "@/lib/schemas/chat.schema";
 import LoadingWrapper from "@/components/shared/LoadingWrapper";
 import {useFetchMutation} from "@/lib/hooks/useFetchMutation";
 import {createConversation} from "@/lib/services/client/chat.client";
-import {useRouter} from "next/navigation";
+import {getFlattenedConversations} from "@/lib/services/server/chat.server";
+import {useConversationContext} from "@/context/ChatContext";
+import {parseFetchError} from "@/lib/utils/helper";
+import {logout} from "@/lib/services/client/auth.client";
 
 interface ContactFormProps {
     placeholder?: string
@@ -39,7 +42,8 @@ export default function ContactForm({
     const {user} = useUserContext()
 
     const {parse} = useDirectValidation(createConversationSchema);
-    const router = useRouter();
+    const {setConversations} = useConversationContext();
+    // const router = useRouter();
 
     // Fiverr-style quick questions
     const quickQuestions = isSeller
@@ -68,15 +72,22 @@ export default function ContactForm({
         createConversation,
         {
             successMessage: "Send message successfully.",
-            onSuccess: () => {
+            onSuccess: async () => {
                 onSubmitAction?.(message)
                 onCancelAction?.();
+                getFlattenedConversations(user?.id ?? '').then(data => {
+                    setConversations(data);
+                }).catch(async error => {
+                    const {status, data} = parseFetchError(error);
+                    if (status === 401) {
+                        await logout({redirectUrl: `/logout`})
+                    }
+                });
             },
         }
     );
 
     const getFormData = useCallback(() => {
-        console.log(user?.id, receiverId)
         if (!user?.id || !receiverId) return null;
 
         const formData = new FormData();
@@ -112,7 +123,6 @@ export default function ContactForm({
         }
 
         const {valid, treeifyError} = parse({participants, message: messageData});
-        console.log(valid, treeifyError);
 
         return {valid, formData, treeifyError};
     }, [getFormData, parse]);

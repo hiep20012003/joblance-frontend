@@ -2,7 +2,6 @@
 import {create} from 'zustand';
 import {io, Socket} from 'socket.io-client';
 import {useEffect} from "react";
-import {logError, logInfo} from "@/lib/utils/devLogger";
 import {useUserContext} from "@/context/UserContext";
 import {appConfig} from '@/lib/hooks/useConfig'
 
@@ -10,7 +9,7 @@ import {appConfig} from '@/lib/hooks/useConfig'
 interface SocketState {
     activeSockets: Record<string, Socket>;
     isConnected: Record<string, boolean>;
-    initializeSocket: (namespace: string, userId: string) => void;
+    initializeSocket: (socketUri: string, namespace: string, userId: string) => void;
     disconnectSocket: (namespace: string) => void;
     disconnectAllSockets: () => void;
     getSocket: (namespace: string) => Socket | undefined;
@@ -29,17 +28,16 @@ export const useSocketStore = create<SocketState>((set, get) => ({
     getSocket: (namespace) => get().activeSockets[namespace],
 
     // Hàm khởi tạo socket (Chuyển userId vào đây)
-    initializeSocket: (namespace: string, userId: string) => {
+    initializeSocket: (socketUri : string,namespace: string, userId: string) => {
         const state = get();
 
         // --- Logic Singleton: Kiểm tra trong activeSockets state ---
         if (state.activeSockets[namespace]) {
-            logInfo('Socket', `[Zustand Socket] Already initialized: ${namespace}`);
             return;
         }
 
         // --- Khởi tạo Socket mới ---
-        const newSocket = io(`${appConfig.SOCKET_URL}/${namespace}`, {
+        const newSocket = io(`${socketUri}${namespace}`, {
             transports: ["websocket", "polling"],
             reconnection: true,
             reconnectionAttempts: Infinity,
@@ -51,14 +49,12 @@ export const useSocketStore = create<SocketState>((set, get) => ({
             set(state => ({
                 isConnected: {...state.isConnected, [namespace]: true}
             }));
-            logInfo('Socket', `[Zustand Socket] Connected: ${namespace}`);
         });
 
         newSocket.on("disconnect", () => {
             set(state => ({
                 isConnected: {...state.isConnected, [namespace]: false}
             }));
-            logInfo('Socket', `[Zustand Socket] Disconnected: ${namespace}`);
         });
 
         // Lưu socket và trạng thái ban đầu vào state
@@ -86,13 +82,11 @@ export const useSocketStore = create<SocketState>((set, get) => ({
                 activeSockets: newActiveSockets,
                 isConnected: newIsConnected,
             });
-            logInfo('Socket', `[Zustand Socket] Disconnected and removed: ${namespace}`);
         }
     },
 
     // Hàm ngắt kết nối tất cả socket
     disconnectAllSockets: () => {
-        logInfo('Socket', `[Zustand Socket] Disconnecting ALL sockets...`);
 
         // Lặp qua tất cả socket trong activeSockets
         Object.values(get().activeSockets).forEach(socket => {
@@ -117,12 +111,10 @@ export const useSocketManager = (namespace: string) => {
     const isConnected = useSocketStore(state => state.isConnected[namespace] || false);
 
     useEffect(() => {
-        console.log("[Zustand Socket] Connected", namespace);
-        if (userId) {
-            // Truyền userId vào initializeSocket
-            initializeSocket(namespace, userId);
+        if (userId && appConfig.SOCKET_URL) {
+            initializeSocket(appConfig.SOCKET_URL ,namespace, userId);
         }
-    }, [userId, namespace, initializeSocket]);
+    }, [userId, namespace, initializeSocket, appConfig.SOCKET_URL]);
 
     // Trả về socket và isConnected của namespace cụ thể
     return {

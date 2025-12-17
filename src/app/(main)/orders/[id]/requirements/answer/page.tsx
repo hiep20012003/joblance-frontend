@@ -158,6 +158,6 @@ export default async function RequirementAnswerPage({params}: { params: Promise<
         }
     } catch (error) {
         if (isRedirectError(error)) throw error;
-        <ServerComponentError error={error}/>
+        return <ServerComponentError error={error}/>
     }
 }

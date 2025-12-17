@@ -78,7 +78,7 @@ export default function SettingMenu({isOpen, onClose, anchorRef}: SettingMenuPro
                 href: isSwitchSellerMode ? `/users/${user?.username}/manage_orders` : `/users/${user?.username}/orders`
             },
             {label: "Messages", icon: Mail, href: `/inbox`},
-            {label: "Settings", icon: Settings, href: `/settings`},
+            // {label: "Settings", icon: Settings, href: `/settings`},
         ];
 
         return [

@@ -2,7 +2,6 @@
 'use client';
 
 import {useRef, useState, useEffect} from 'react';
-import {logInfo, logError, logWithTrace} from '@/lib/utils/devLogger';
 
 export interface FileInputBaseProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'onChange' | 'defaultValue'> {
     error?: string;
@@ -46,8 +45,6 @@ export const useFileInputLogic = <T>(
         ...rest
     } = props;
 
-    // 🔹 Log hook initialization
-    logInfo('FileInputLogic', 'Initializing useFileInputLogic', {props});
 
     const [previews, setPreviews] = useState<string[]>([]);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -60,7 +57,6 @@ export const useFileInputLogic = <T>(
             } else if (typeof defaultValue === 'string') {
                 setPreviews([defaultValue]);
             }
-            logInfo('FileInputLogic', 'Initializing previews from defaultValue', {defaultValue});
         } else {
             setPreviews([]);
         }
@@ -69,10 +65,6 @@ export const useFileInputLogic = <T>(
     const handleFiles = (files: FileList | null) => {
         if (readOnly || !files) return;
 
-        logWithTrace('FileInputLogic', 'Handling files', {
-            files: Array.from(files).map(f => f.name)
-        });
-
         const newErrors: string[] = [];
         const filesToProcess = Array.from(files);
 
@@ -80,9 +72,7 @@ export const useFileInputLogic = <T>(
             const error = validateFile(file);
             if (error) {
                 newErrors.push(error);
-                logError('FileInputLogic', 'File validation failed', {fileName: file.name, error});
             } else {
-                logInfo('FileInputLogic', 'Updating previews for file', {fileName: file.name});
                 updatePreviews(file, previews, setPreviews);
             }
         });
@@ -98,7 +88,6 @@ export const useFileInputLogic = <T>(
         e.stopPropagation();
         const active = e.type === 'dragenter' || e.type === 'dragover';
         setDragActive?.(active);
-        logInfo('FileInputLogic', 'Drag event', {type: e.type, dragActive: active});
     };
 
     const handleDrop = (e: React.DragEvent) => {
@@ -108,9 +97,6 @@ export const useFileInputLogic = <T>(
         setDragActive?.(false);
         handleFiles(e.dataTransfer.files);
 
-        logInfo('FileInputLogic', 'Drop event', {
-            files: Array.from(e.dataTransfer.files).map(f => f.name)
-        });
 
         if (inputRef.current && e.dataTransfer.files) {
             const dt = new DataTransfer();

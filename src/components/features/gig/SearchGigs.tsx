@@ -56,8 +56,8 @@ export default function SearchGigs({
     ];
 
     const sortOptions = useMemo(() => type !== 'categories' ? [
-        {label: 'Best Selling', value: {by: 'best', order: 'desc'}},
         {label: 'Best match', value: {by: '_score', order: 'desc'}},
+        {label: 'Best Selling', value: {by: 'best', order: 'desc'}},
         {label: 'Price: Low to High', value: {by: 'price', order: 'asc'}},
         {label: 'Price: High to Low', value: {by: 'price', order: 'desc'}},
         {label: 'Newest', value: {by: 'createdAt', order: 'desc'}},
@@ -69,9 +69,10 @@ export default function SearchGigs({
     ], [])
 
     // === States ===
-    const [selectedCategory, setSelectedCategory] = useState<string>(
-        fromSlug(parsedFilters.categories[0] || "")
-    );
+    const selectedCategory = useMemo(() => {
+        return fromSlug(parsedFilters.categories[0] || "");
+    }, [parsedFilters.categories]);
+
 
     const [tempBudget, setTempBudget] = useState<{
         type: 'preset' | 'custom';
@@ -109,16 +110,12 @@ export default function SearchGigs({
 
     // === Handlers ===
     const handleCategorySelect = useCallback((category: string) => {
-        const newCategory = category === "All Categories" ? "" : (selectedCategory === category ? "" : category);
+        const newCategory =
+            category === "All Categories" ? undefined : toSlug(category);
 
-        setSelectedCategory(newCategory);
-
-        updateURL({
-            cat: newCategory ? toSlug(newCategory) : undefined,
-        });
-
-        setOpenMenu(p => ({...p, category: false}));
-    }, [selectedCategory, updateURL]);
+        updateURL({ cat: newCategory });
+        setOpenMenu(p => ({ ...p, category: false }));
+    }, [updateURL]);
 
 
     const handleTempBudgetChange = (type: 'preset' | 'custom', min?: number, max?: number) => {
@@ -212,11 +209,10 @@ export default function SearchGigs({
     }, []);
 
     useEffect(() => {
-        if (containerRef.current) {
-            containerRef.current.scrollIntoView({behavior: 'smooth', block: 'start'});
+        if (!loading && containerRef.current) {
+            containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-    }, [currentPage]);
-
+    }, [loading]);
 
     return (
         <div ref={containerRef} className="w-full relative flex flex-col">

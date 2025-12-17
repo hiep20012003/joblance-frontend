@@ -3,7 +3,6 @@ import {useState, useCallback} from 'react';
 import {parseFetchError} from '@/lib/utils/helper';
 import {useToast} from '@/context/ToastContext';
 import {ApiError} from '@/lib/utils/api';
-import {logInfo, logError, logWithTrace} from '@/lib/utils/devLogger';
 
 type FetchOptions<T> = {
     successMessage?: string;
@@ -26,14 +25,11 @@ export function useFetchMutation<T, A = void>(
 
     const mutate = useCallback(
         async (args?: A): Promise<T | null> => {
-            logWithTrace('FetchMutation', 'Starting mutation', {args});
 
             setLoading(true);
             try {
                 const result = await action(args as A);
 
-                // 🔹 Log successful mutation
-                logInfo('FetchMutation', 'Mutation successful', {result});
 
                 if (!options.disableToast) {
                     addToastByType(options.successMessage ?? 'Success', 'success');
@@ -44,17 +40,11 @@ export function useFetchMutation<T, A = void>(
             } catch (err) {
                 const {status, data} = parseFetchError(err);
 
-                // 🔹 Log mutation failure
-                logError('FetchMutation', 'Mutation failed', {status, data, error: err});
-
                 if (!options.disableToast) {
                     addToastByStatus(data?.message, status);
                 }
 
-                // 🔹 Log unauthorized redirect
                 if (options.redirectOnUnauthorized && status === 401) {
-                    logInfo('FetchMutation', 'Unauthorized, redirecting', {status});
-                    // await logout({ redirectUrl: '/logout' });
                     return null;
                 }
 
