@@ -32,7 +32,6 @@ export default function OrderMoreActionMenu({
 
     const handleConfirmCancel = () => {
         // Logic để thực hiện request cancel order
-        console.log("Order cancellation requested");
         setToggleAlertOpen(false);
         setRequestCancelModalOpen(true);
     };

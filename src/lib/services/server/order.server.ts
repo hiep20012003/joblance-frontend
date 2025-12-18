@@ -5,8 +5,6 @@ import {INegotiationDocument, IOrderDocument} from "@/types/order";
 import {buildQueryString} from "@/lib/utils/helper";
 
 export async function validatePayment(orderId: string, buyerId: string, gigId: string) {
-
-
     return await fetchApi<Required<{
         valid: boolean;
         status: string;

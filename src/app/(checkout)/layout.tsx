@@ -29,7 +29,7 @@ export default function CheckoutLayout({children}: { children: ReactNode }) {
                     </Link>
                 </div>
             </header>
-            <main className="grid grid-cols-1">
+            <main className="grid grid-cols-1 h-full">
                 <div className="container mx-auto px-6 py-8">
                     {children}
                 </div>

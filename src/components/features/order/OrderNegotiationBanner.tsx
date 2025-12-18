@@ -43,7 +43,6 @@ export default function OrderNegotiationBanner({
                 //     return shouldAdd ? [...prev, gig] : prev;
                 // });
                 onReject?.();
-                console.log(12345);
                 router.refresh();
             },
         }

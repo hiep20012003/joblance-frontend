@@ -9,6 +9,7 @@ import clsx from 'clsx';
 import {formatPrice} from "@/lib/utils/helper";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
+import Markdown from "react-markdown";
 
 type OrderDetailProps = {
     order: Required<IOrderDocument>;
@@ -144,7 +145,9 @@ function OrderDetail({order, className}: OrderDetailProps) {
                         <div className="flex flex-col gap-2">
                             <h3 className="text-lg font-semibold text-gray-900">{gigTitle}</h3>
                             <p className="text-sm text-gray-700">
-                                {displayedDescription}
+                                <Markdown>
+                                    {displayedDescription}
+                                </Markdown>
                                 {isLongDescription && (
                                     <button
                                         className="ml-2 text-blue-500 underline cursor-pointer"

@@ -66,7 +66,7 @@ export async function fetchApi<T = Record<string, unknown>>(
 
     const baseUrl = isServer
         ? `${process.env.BASE_URL}/api` || "http://localhost:3000/api"
-        : `${appConfig.BASE_URL}/api`;
+        : `/api`;
 
     const fullUrl = `${baseUrl}${url}`;
 

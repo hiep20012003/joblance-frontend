@@ -84,7 +84,6 @@ export default function BuyerManageOrders({
 
     const handleCancelClick = (id: string) => {
         setSelectedOrderId(id);
-        console.log(id);
         setToggleAlertOpen(true);
     };
 
