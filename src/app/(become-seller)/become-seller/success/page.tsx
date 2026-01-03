@@ -1,14 +1,9 @@
 import {CheckCircle} from "lucide-react";
 import Link from "next/link";
 import {auth} from "@/auth";
-import {redirect} from "next/navigation";
 
 export default async function SellerRegistrationSuccessPage() {
     const session = await auth();
-
-    if (session && !session.user.roles?.includes('seller')) {
-        redirect('/become-seller');
-    }
 
     return (
         <div className="flex-1 flex flex-col items-center justify-center text-center min-h-[60vh] px-6">
@@ -25,7 +20,7 @@ export default async function SellerRegistrationSuccessPage() {
 
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
                 <Link
-                    href={`/users/${session?.user.username}/seller_dashboard`}
+                    href={`/users/${session?.user?.username}/seller_dashboard`}
                     className="px-6 py-3 bg-success-600 text-white rounded-md hover:bg-success-700 transition"
                 >
                     Go to Dashboard

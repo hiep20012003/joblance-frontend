@@ -7,7 +7,7 @@ import MenuItem from "@/components/shared/MenuItem";
 import {LogOut, Mail, Package, Settings, User, ShoppingBag, Store} from "lucide-react";
 import Avatar from "@/components/shared/Avatar";
 import LoadingWrapper from "@/components/shared/LoadingWrapper";
-import {useUserContext} from "@/context/UserContext";
+import {useUserContext, useUserStore} from "@/context/UserContext";
 import {logout} from "@/lib/services/client/auth.client";
 import {isOrderPath, isSellerPath} from "@/lib/utils/helper";
 
@@ -38,6 +38,7 @@ export default function SettingMenu({isOpen, onClose, anchorRef}: SettingMenuPro
 
     const isSwitchSellerMode = isSellerPage && !isOrderPage ? true : isOrderPage && isSellerMode;
     const isSeller = user?.roles?.includes('seller');
+    const resetState = useUserStore((state) => state.logout);
 
     // Nút switch dựa vào pathname
     const switchModeLabel = isSwitchSellerMode ? "Switch to Buying" : isSeller ? "Switch to Selling" : "Become a Seller";
@@ -58,6 +59,8 @@ export default function SettingMenu({isOpen, onClose, anchorRef}: SettingMenuPro
     const handleLogout = useCallback(async () => {
         try {
             setIsLoggingOut(true);
+            resetState();
+
             await logout({redirectUrl: `/logout?source=${pathname}`});
             onClose();
         } finally {

@@ -9,9 +9,9 @@ import {Lock} from 'lucide-react';
 import {changePassword} from "@/lib/services/client/user.client";
 import LoadingWrapper from "@/components/shared/LoadingWrapper";
 import {useFetchMutation} from "@/lib/hooks/useFetchMutation";
+import {useUserContext} from "@/context/UserContext";
 
 export default function ChangePasswordForm({onClose}: { onClose: () => void }) {
-
     const [changePasswordInfo, setChangePasswordInfo] = useState<ChangePasswordPayload>({
         currentPassword: "",
         newPassword: "",

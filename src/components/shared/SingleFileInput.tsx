@@ -34,17 +34,17 @@ export const SingleFileInput = forwardRef<{ input: HTMLInputElement | null; rese
             if (maxSizeMB && file.size > maxSizeMB * 1024 * 1024) {
                 return `File size must be less than ${maxSizeMB}MB`;
             }
-            if (props.accept) {
-                const acceptedTypes = props.accept.split(',').map(t => t.trim());
-                const fileType = file.type;
-                const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
-                const isAccepted = acceptedTypes.some(type => {
-                    if (type.startsWith('.')) return fileExtension === type.toLowerCase();
-                    if (type.endsWith('/*')) return fileType.startsWith(type.replace('/*', ''));
-                    return fileType === type;
-                });
-                if (!isAccepted) return 'File type not accepted';
-            }
+            // if (props.accept) {
+            //     const acceptedTypes = props.accept.split(',').map(t => t.trim());
+            //     const fileType = file.type;
+            //     const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+            //     const isAccepted = acceptedTypes.some(type => {
+            //         if (type.startsWith('.')) return fileExtension === type.toLowerCase();
+            //         if (type.endsWith('/*')) return fileType.startsWith(type.replace('/*', ''));
+            //         return fileType === type;
+            //     });
+            //     if (!isAccepted) return 'File type not accepted';
+            // }
             return null;
         };
 
@@ -195,6 +195,7 @@ export const SingleFileInput = forwardRef<{ input: HTMLInputElement | null; rese
                     onClick={() => !props.disabled && !readOnly && inputRef.current?.click()}
                 >
                     <input
+                        accept={props.accept}
                         ref={inputRef}
                         type="file"
                         className="hidden"

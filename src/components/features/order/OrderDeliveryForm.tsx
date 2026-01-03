@@ -3,7 +3,7 @@
 import React, {useState} from 'react';
 import FormLabel from "@/components/shared/FormLabel";
 import Textarea from "@/components/shared/Textarea";
-import {MultiFileInput} from "@/components/shared/MultiFileInput";
+import {MultipleFileInput} from "@/components/shared/MultipleFileInput";
 import {AlertCircle} from "lucide-react";
 import LoadingWrapper from "@/components/shared/LoadingWrapper";
 import {ALL_GIG_DELIVERY_MIMES} from "@/lib/constants/constant";
@@ -26,6 +26,7 @@ export default function OrderDeliveryForm({
     const [deliveryMessage, setDeliveryMessage] = useState('');
     const [deliveryFiles, setDeliveryFiles] = useState<File[]>([]);
     const [formErrors, setFormErrors] = useState<ValidationTreeifyErrors<IDeliveredWork>>({});
+    const [flatError, setFlatError] = useState<any>();
     const router = useRouter();
 
     const {parse} = useDirectValidation(deliveryOrderSchema);
@@ -62,7 +63,8 @@ export default function OrderDeliveryForm({
 
         const data = {message, deliveryFiles};
 
-        const {valid, treeifyError} = parse(data);
+        const {valid, treeifyError, errors} = parse(data);
+        setFlatError(errors)
         setFormErrors(treeifyError);
         return valid;
     };
@@ -111,16 +113,15 @@ export default function OrderDeliveryForm({
                         <p className="text-xs text-gray-500 mt-1">Enter at least 5 characters</p>
                     </div>
                     <div className="mb-4">
-                        <FormLabel label="Attach Files (Optional)"/>
-                        <MultiFileInput
+                        <FormLabel label="Attach Files" required/>
+                        <MultipleFileInput
                             onChange={setDeliveryFiles}
                             maxFiles={5}
-                            maxSizeMB={20}
+                            maxSizeMB={10}
                             accept={[...ALL_GIG_DELIVERY_MIMES].join(',')}
-                            error={formErrors?.properties?.deliveryFiles?.errors[0]}
+                            error={formErrors?.properties?.deliveryFiles?.errors?.[0] ?? flatError?.deliveryFiles?.[0] ?? ''}
                         />
-                        <p className="text-xs text-gray-500 mt-1">Max 5 files, up to 20MB each. Accepted: images,
-                            PDF, DOCX</p>
+
                     </div>
                     <div className="flex justify-end gap-3 mt-6">
                         <button

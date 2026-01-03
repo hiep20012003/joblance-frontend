@@ -22,7 +22,7 @@ export default function AppProvider({
         if (initialUser && !user) {
             setUser(initialUser);
         }
-    }, [initialUser, setUser, user]);
+    }, [initialUser, user]);
 
     useStatus();
 

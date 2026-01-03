@@ -63,9 +63,9 @@ export const HeroSection = () => {
             <div className="relative z-10 container mx-auto flex flex-col justify-center h-full gap-6 px-4">
                 <h1 className="text-white text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-tight">
                     <span className={'text-primary-600'}>
-                        Lorem ipsum dolor
+                        Turn your skills
                     </span>
-                    <br className="hidden sm:block"/> sit amet consectetur elit.
+                    <br className="hidden sm:block"/> into success with Joblance.
                 </h1>
 
                 {/* Search form */}

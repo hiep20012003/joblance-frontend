@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
         const cookieHeader = req.headers.get('cookie') ?? '';
         const body = await req.json();
 
-        const response = await fetch(`${process.env.GATEWAY_URL}/api/v1/users/password`, {
+        const response = await fetch(`${process.env.GATEWAY_URL}/api/v1/users/password/change`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

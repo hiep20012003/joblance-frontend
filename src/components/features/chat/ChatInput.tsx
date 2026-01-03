@@ -42,17 +42,17 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
             if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
                 return `File ${file.name} exceeds the maximum size of ${MAX_FILE_SIZE_MB}MB.`;
             }
-            if (ACCEPTED_FILE_TYPES) {
-                const acceptedTypes = ACCEPTED_FILE_TYPES.split(',').map(t => t.trim());
-                const fileType = file.type;
-                const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
-                const isAccepted = acceptedTypes.some(type => {
-                    if (type.startsWith('.')) return fileExtension === type.toLowerCase();
-                    if (type.endsWith('/*')) return fileType.startsWith(type.replace('/*', ''));
-                    return fileType === type;
-                });
-                if (!isAccepted) return 'File type not accepted';
-            }
+            // if (ACCEPTED_FILE_TYPES) {
+            //     const acceptedTypes = ACCEPTED_FILE_TYPES.split(',').map(t => t.trim());
+            //     const fileType = file.type;
+            //     const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+            //     const isAccepted = acceptedTypes.some(type => {
+            //         if (type.startsWith('.')) return fileExtension === type.toLowerCase();
+            //         if (type.endsWith('/*')) return fileType.startsWith(type.replace('/*', ''));
+            //         return fileType === type;
+            //     });
+            //     if (!isAccepted) return 'File type not accepted';
+            // }
             return null;
         }, []);
 

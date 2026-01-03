@@ -9,7 +9,7 @@ import {
 import clsx from 'clsx';
 import {Upload, X, File as FileIcon} from 'lucide-react';
 import Image from 'next/image';
-import {BASE_MIMES} from "@/lib/constants/constant";
+import {ALL_CHAT_FILE_MIMES, BASE_MIMES} from "@/lib/constants/constant";
 import {formatFileSize} from "@/lib/utils/helper";
 
 export interface MultiFileInputProps extends FileInputBaseProps {
@@ -18,7 +18,7 @@ export interface MultiFileInputProps extends FileInputBaseProps {
     maxFiles?: number; // New prop for maximum number of files
 }
 
-export const MultiFileInput = forwardRef<{ input: HTMLInputElement | null; reset: () => void }, MultiFileInputProps>(
+export const MultipleFileInput = forwardRef<{ input: HTMLInputElement | null; reset: () => void }, MultiFileInputProps>(
     ({
          error,
          label,
@@ -39,19 +39,26 @@ export const MultiFileInput = forwardRef<{ input: HTMLInputElement | null; reset
             if (maxSizeMB && file.size > maxSizeMB * 1024 * 1024) {
                 return `File size must be less than ${maxSizeMB}MB`;
             }
-            if (props.accept) {
-                const acceptedTypes = props.accept.split(',').map(t => t.trim());
-                const fileType = file.type;
-                const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
-                const isAccepted = acceptedTypes.some(type => {
-                    if (type.startsWith('.')) return fileExtension === type.toLowerCase();
-                    if (type.endsWith('/*')) return fileType.startsWith(type.replace('/*', ''));
-                    return fileType === type;
-                });
-                if (!isAccepted) return 'File type not accepted';
-            }
+
+            // const acceptedMimes = props.accept
+            //     ? props.accept.split(',').map(t => t.trim())
+            //     : ALL_CHAT_FILE_MIMES; // fallback to your predefined list
+            //
+            // const fileType = file.type;
+            // const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+            //
+            // const isAccepted = acceptedMimes.some(type => {
+            //     if (!type) return false;
+            //     type = type.trim().toLowerCase();
+            //     if (type.startsWith('.')) return type === fileExtension; // exact match for extension
+            //     if (type.endsWith('/*')) return fileType.startsWith(type.replace('/*', '')); // wildcard
+            //     return fileType === type; // exact MIME match
+            // });
+
+            // if (!isAccepted) return 'File type not accepted';
             return null;
         };
+
 
         const updatePreviews = (file: File, currentPreviews: string[], setPreviews: React.Dispatch<React.SetStateAction<string[]>>): string[] => {
             if (!showPreview) return [];
@@ -144,6 +151,7 @@ export const MultiFileInput = forwardRef<{ input: HTMLInputElement | null; reset
                 alert(newErrors.join('\n'));
             }
 
+
             setSelectedFiles(prev => [...prev, ...newSelectedFiles]);
             onChange?.([...selectedFiles, ...newSelectedFiles]);
 
@@ -233,6 +241,7 @@ export const MultiFileInput = forwardRef<{ input: HTMLInputElement | null; reset
                     <input
                         ref={inputRef}
                         type="file"
+                        accept={props.accept}
                         className="hidden"
                         onChange={handleChange}
                         disabled={props.disabled || readOnly}
@@ -333,4 +342,4 @@ export const MultiFileInput = forwardRef<{ input: HTMLInputElement | null; reset
     }
 );
 
-MultiFileInput.displayName = 'MultiFileInput';
+MultipleFileInput.displayName = 'MultiFileInput';

@@ -6,7 +6,9 @@ const fileSchema = z
     .instanceof(File)
     .refine((file) => file.size <= 10 * 1024 * 1024, {message: "Maximum file size is 10MB"})
     .refine(
-        (file) => ALL_GIG_DELIVERY_MIMES.includes(file.type),
+        (file) => {
+            return ALL_GIG_DELIVERY_MIMES.includes(file.type)
+        },
         {message: "File format not supported"}
     );
 

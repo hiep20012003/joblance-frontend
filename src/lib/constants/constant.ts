@@ -164,6 +164,7 @@ export const BASE_MIMES = {
     ],
     audio: [
         'audio/mpeg',    // mp3
+        'audio/mp3',    // mp3
         'audio/wav',
         'audio/ogg'
     ],
@@ -179,6 +180,7 @@ export const BASE_MIMES = {
     ],
     archives: [
         'application/zip',
+        'application/x-zip-compressed',
         'application/x-rar-compressed', // .rar
         'application/x-7z-compressed', // .7z
         'application/gzip' // .gz
@@ -194,6 +196,9 @@ export const CHAT_FILE_ALLOWED_MIMES = {
     ],
     videos: [
         ...BASE_MIMES.videos,
+    ],
+    audio: [
+        ...BASE_MIMES.audio,
     ],
     documents: [
         ...BASE_MIMES.documents.filter(mime =>

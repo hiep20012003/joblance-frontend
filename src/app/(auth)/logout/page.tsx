@@ -1,39 +1,50 @@
 'use client'
 
-import {useEffect} from "react";
-import {useRouter, useSearchParams} from "next/navigation";
-import {useUserContext} from "@/context/UserContext";
+import { useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
+import { signOut } from "next-auth/react";
+import { useSocketStore } from "@/context/SocketContext";
 import Spinner from "@/components/shared/Spinner";
-import {logout} from "@/lib/services/client/auth.client";
-import {getSession, signOut} from "next-auth/react";
-import {useSocketStore} from "@/context/SocketContext";
+import {useUserStore} from "@/context/UserContext";
 
 export default function LogoutPage() {
-    const {logout: resetState} = useUserContext();
-    const router = useRouter();
     const searchParams = useSearchParams();
-    const {disconnectAllSockets} = useSocketStore();
-    const redirectUrl = searchParams.get('source') ? `/login?redirect=${searchParams.get('source')}` : "/login";
+    const logoutExecuted = useRef(false);
+
+    // Lấy hàm logout từ store
+    const resetState = useUserStore((state) => state.logout);
+    const disconnectAllSockets = useSocketStore((state) => state.disconnectAllSockets);
 
     useEffect(() => {
-        const handleLogout = async () => {
-            resetState();
-            const session = await getSession();
-            if (session && session?.user) {
-                await signOut({redirect: false})
-                await logout({redirectUrl: redirectUrl});
+        if (logoutExecuted.current) return;
+        logoutExecuted.current = true;
+
+        const performLogout = async () => {
+            try {
+                await disconnectAllSockets();
+
+                await resetState();
+
+                await signOut({ redirect: false });
+
+                const source = searchParams.get('source');
+                const redirectUrl = source ? `/login?redirect=${encodeURIComponent(source)}` : "/login";
+
+                window.location.href = redirectUrl;
+            } catch (error) {
+                console.error("Logout error:", error);
+                window.location.href = "/login";
             }
-            disconnectAllSockets();
-            router.replace(redirectUrl);
         };
-        handleLogout().then();
-    }, []);
+
+        performLogout();
+    }, [resetState, disconnectAllSockets, searchParams]);
 
     return (
         <div className="flex justify-center items-center min-h-screen">
-            <div className="flex items-center gap-3 text-gray-600 text-lg">
-                <Spinner/>
-                <span>Logging out...</span>
+            <div className="flex flex-col items-center gap-4">
+                <Spinner />
+                <span className="text-gray-500">logout...</span>
             </div>
         </div>
     );

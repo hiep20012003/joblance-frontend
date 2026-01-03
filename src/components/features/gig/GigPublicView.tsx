@@ -20,6 +20,7 @@ import Modal from "@/components/shared/Modal";
 import ContactForm from "@/components/features/chat/ContactForm";
 import {ReviewList} from "@/components/features/review/ReviewList";
 import Markdown from 'react-markdown';
+import {useStatusContext} from "@/context/StatusContext";
 
 export default function GigPublicView({
                                           gig,
@@ -71,6 +72,10 @@ export default function GigPublicView({
     //         document.body.style.overflow = ''; // Revert to default
     //     }
     // }
+    const {online, requestStatus} = useStatusContext()
+
+    const isOnline = useMemo(() => Boolean(online.get(seller?._id ?? '')), [online, seller?._id]);
+
 
     useEffect(() => {
         if (isContinueOpen) {
@@ -79,6 +84,10 @@ export default function GigPublicView({
             document.body.style.overflow = '';
         }
     }, [isContinueOpen]);
+
+    useEffect(() => {
+        requestStatus(seller?._id)
+    }, []);
 
     if (!seller) {
         notFound();
@@ -113,6 +122,7 @@ export default function GigPublicView({
                                     src={seller.profilePicture || "/images/default-avatar.png"}
                                     username={seller.fullName ?? ""}
                                     size={60}
+                                    isOnline={isOnline}
                                     className="border-1 border-primary-500"/>
                                 <div className="flex flex-col justify-center items-start flex-1 gap-1">
                                     <div className="flex flex-row items-end gap-2">
@@ -213,10 +223,15 @@ export default function GigPublicView({
                                     src={seller.profilePicture || "/images/default-avatar.png"}
                                     username={seller.fullName ?? ""}
                                     size={40}
+                                    isOnline={isOnline}
                                     className="border border-primary-500"/>
                                 <div className="flex flex-col">
                                     <h1 className="text-base font-bold text-gray-800">{seller.fullName}</h1>
-                                    <p className="text-gray-700 text-sm">Offline</p>
+                                    {
+                                        isOnline ?
+                                    (<p className="text-gray-700 text-sm">Online</p>):
+                                    (<p className="text-gray-700 text-sm">Offline</p>)
+                                    }
                                 </div>
                             </div>
                             <button
